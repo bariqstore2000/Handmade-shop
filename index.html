@@ -101,6 +101,9 @@
         <label>ملاحظات:</label>
         <textarea id="notes"></textarea>
 
+        <label>صورة التحويل (سكرين شوت):</label>
+        <input type="file" id="paymentImage" accept="image/*" required>
+
         <button type="submit" class="btn">إرسال الطلب على واتساب</button>
       </form>
     </div>
@@ -119,10 +122,11 @@
 📞 رقم الهاتف: ${phone}
 📍 العنوان: ${address}
 🛍️ المنتج: ${product}
-📝 ملاحظات: ${notes}`;
+📝 ملاحظات: ${notes}
+📸 من فضلك أرفق صورة التحويل الآن هنا`;
 
       const encodedMessage = encodeURIComponent(message);
-      const whatsappNumber = "201091212686"; // الرقم بدون صفر، وبالبادئة 20
+      const whatsappNumber = "201091212686"; // رقمك بدون صفر
 
       window.open(`https://wa.me/${whatsappNumber}?text=${encodedMessage}`, "_blank");
     }
