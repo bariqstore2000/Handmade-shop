@@ -44,6 +44,7 @@
       border: none;
       border-radius: 5px;
       text-decoration: none;
+      cursor: pointer;
     }
     .form-section {
       background-color: #f9f9f9;
@@ -80,29 +81,51 @@
       <h3>طريقة الدفع</h3>
       <p>📱 فودافون كاش: <strong>01091212686</strong></p>
       <p>🏦 انستا باي: <strong>01091212686</strong></p>
-      <p>بعد الدفع، من فضلك املأ البيانات التالية:</p>
+      <p>بعد الدفع، من فضلك املأ البيانات التالية وسيتم توجيهك مباشرة إلى واتساب:</p>
 
-      <form>
+      <form onsubmit="sendToWhatsApp(); return false;">
         <label>الاسم الكامل:</label>
-        <input type="text" required>
+        <input type="text" id="name" required>
 
         <label>رقم الهاتف:</label>
-        <input type="tel" required>
+        <input type="tel" id="phone" required>
 
         <label>العنوان:</label>
-        <textarea required></textarea>
+        <textarea id="address" required></textarea>
 
         <label>اسم المنتج:</label>
-        <select>
+        <select id="product">
           <option>اسورة استالس بيور</option>
         </select>
 
         <label>ملاحظات:</label>
-        <textarea></textarea>
+        <textarea id="notes"></textarea>
 
-        <button type="submit" class="btn">إرسال الطلب</button>
+        <button type="submit" class="btn">إرسال الطلب على واتساب</button>
       </form>
     </div>
   </div>
+
+  <script>
+    function sendToWhatsApp() {
+      const name = document.getElementById("name").value;
+      const phone = document.getElementById("phone").value;
+      const address = document.getElementById("address").value;
+      const product = document.getElementById("product").value;
+      const notes = document.getElementById("notes").value;
+
+      const message = `طلب جديد:
+🧾 الاسم: ${name}
+📞 رقم الهاتف: ${phone}
+📍 العنوان: ${address}
+🛍️ المنتج: ${product}
+📝 ملاحظات: ${notes}`;
+
+      const encodedMessage = encodeURIComponent(message);
+      const whatsappNumber = "201091212686"; // الرقم بدون صفر، وبالبادئة 20
+
+      window.open(`https://wa.me/${whatsappNumber}?text=${encodedMessage}`, "_blank");
+    }
+  </script>
 </body>
 </html>
