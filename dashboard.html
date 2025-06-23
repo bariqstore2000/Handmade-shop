@@ -16,18 +16,16 @@
       border-radius:15px;padding:2rem;box-shadow:0 6px 12px rgba(0,0,0,0.1);
     }
     h2{margin-top:0;}
-    input, textarea {
-      width:100%;padding:0.7rem;margin-bottom:1rem;
-      border:1px solid #ccc;border-radius:10px;
-    }
-    button {
-      background:#e91e63;color:white;border:none;
-      padding:0.7rem 1.5rem;font-size:1rem;border-radius:10px;cursor:pointer;
-    }
+    input{width:100%;padding:0.7rem;margin-bottom:1rem;border:1px solid #ccc;border-radius:10px;}
+    textarea{width:100%;padding:0.7rem;margin-bottom:1rem;border:1px solid #ccc;border-radius:10px;}
+    button{background:#e91e63;color:white;border:none;
+      padding:0.7rem 1.5rem;font-size:1rem;border-radius:10px;cursor:pointer;}
     button:hover{background:#c2185b;}
-    .product-item {
+    .product-item{
       border:1px dashed #f8bbd0;padding:1rem;border-radius:10px;margin-bottom:1rem;
     }
+    .edit-input { width:90%; padding:0.5rem; margin-bottom:0.5rem; border-radius:8px; border:1px solid #ddd; }
+    .product-buttons { display:flex; gap:10px; flex-wrap: wrap; }
   </style>
 </head>
 <body>
@@ -54,74 +52,84 @@
   </div>
 
   <script>
-    const binId = "6859dc408a456b7966b45e97";
-    const apiKey = "$2a$10$5mDPhbojylWVObRzAhkf9OHB8AuuykL/cvlGx4rC3V1IRjwvTzA6a";
-    let rec = {};
+    const binId="6859dc408a456b7966b45e97";
+    const apiKey="$2a$10$5mDPhbojylWVObRzAhkf9OHB8AuuykL/cvlGx4rC3V1IRjwvTzA6a";
+    let rec={};
 
-    async function fetchData() {
-      const r = await fetch(`https://api.jsonbin.io/v3/b/${binId}/latest`, {
-        headers: { "X-Master-Key": apiKey }
-      });
-      rec = (await r.json()).record || {};
-      rec.social = rec.social || {};
-      rec.products = rec.products || [];
+    async function fetchData(){
+      const r=await fetch(`https://api.jsonbin.io/v3/b/${binId}/latest`,{headers:{"X-Master-Key":apiKey}});
+      rec=(await r.json()).record||{};
       fillForm(); renderProducts();
     }
 
-    function fillForm() {
-      document.getElementById("siteTitle").value = rec.siteTitle || "";
-      document.getElementById("favicon").value = rec.favicon || "";
-      document.getElementById("facebook").value = rec.social.facebook || "";
-      document.getElementById("instagram").value = rec.social.instagram || "";
-      document.getElementById("tiktok").value = rec.social.tiktok || "";
+    function fillForm(){
+      document.getElementById("siteTitle").value=rec.siteTitle||"";
+      document.getElementById("favicon").value=rec.favicon||"";
+      document.getElementById("facebook").value=rec.social?.facebook||"";
+      document.getElementById("instagram").value=rec.social?.instagram||"";
+      document.getElementById("tiktok").value=rec.social?.tiktok||"";
     }
 
-    function renderProducts() {
-      const dl = document.getElementById("productList");
-      dl.innerHTML = "";
-      rec.products.forEach((p, i) => {
-        const d = document.createElement("div");
-        d.className = "product-item";
-        d.innerHTML = `<strong>${p.name}</strong> — ${p.price} جنيه<br>
-          <img src="${p.image}" width="120"><br>
-          <button onclick="deleteProduct(${i})">🗑️ حذف</button>`;
+    function renderProducts(){
+      const dl=document.getElementById("productList");
+      dl.innerHTML="";
+      (rec.products||[]).forEach((p,i)=>{
+        const d=document.createElement("div"); d.className="product-item";
+        d.innerHTML=`
+          <input class="edit-input" value="${p.name}" id="name${i}">
+          <input class="edit-input" value="${p.price}" id="price${i}">
+          <input class="edit-input" value="${p.image}" id="image${i}">
+          <img src="${p.image}" width="120" style="margin-bottom: 10px;"><br>
+          <div class="product-buttons">
+            <button onclick="updateProduct(${i})">💾 حفظ</button>
+            <button onclick="deleteProduct(${i})">🗑️ حذف</button>
+          </div>
+        `;
         dl.appendChild(d);
       });
     }
 
-    async function save() {
-      await fetch(`https://api.jsonbin.io/v3/b/${binId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          "X-Master-Key": apiKey
-        },
-        body: JSON.stringify(rec)
+    async function save(){
+      await fetch(`https://api.jsonbin.io/v3/b/${binId}`,{
+        method:"PUT",
+        headers:{"Content-Type":"application/json","X-Master-Key":apiKey},
+        body:JSON.stringify(rec)
       });
       fetchData();
     }
 
-    function addProduct() {
-      const n = document.getElementById("pname").value;
-      const pr = document.getElementById("pprice").value;
-      const im = document.getElementById("pimage").value;
-      if (!n || !pr || !im) return alert("املأ كل الحقول");
-      rec.products.push({ name: n, price: pr, image: im });
-      document.getElementById("pname").value = "";
-      document.getElementById("pprice").value = "";
-      document.getElementById("pimage").value = "";
+    function addProduct(){
+      const n=document.getElementById("pname").value;
+      const pr=document.getElementById("pprice").value;
+      const im=document.getElementById("pimage").value;
+      if(!n||!pr||!im)return alert("املأ كل الحقول");
+      rec.products=rec.products||[];
+      rec.products.push({name:n,price:pr,image:im});
+      document.getElementById("pname").value="";
+      document.getElementById("pprice").value="";
+      document.getElementById("pimage").value="";
       save();
     }
 
-    function deleteProduct(i) {
-      rec.products.splice(i, 1); save();
+    function deleteProduct(i){
+      rec.products.splice(i,1); save();
     }
 
-    document.getElementById("siteTitle").addEventListener("change", e => { rec.siteTitle = e.target.value; save(); });
-    document.getElementById("favicon").addEventListener("change", e => { rec.favicon = e.target.value; save(); });
-    document.getElementById("facebook").addEventListener("change", e => { rec.social.facebook = e.target.value; save(); });
-    document.getElementById("instagram").addEventListener("change", e => { rec.social.instagram = e.target.value; save(); });
-    document.getElementById("tiktok").addEventListener("change", e => { rec.social.tiktok = e.target.value; save(); });
+    function updateProduct(i){
+      const newName = document.getElementById(`name${i}`).value;
+      const newPrice = document.getElementById(`price${i}`).value;
+      const newImage = document.getElementById(`image${i}`).value;
+      rec.products[i].name = newName;
+      rec.products[i].price = newPrice;
+      rec.products[i].image = newImage;
+      save();
+    }
+
+    document.getElementById("siteTitle").addEventListener("change",e=>{rec.siteTitle=e.target.value;save();});
+    document.getElementById("favicon").addEventListener("change",e=>{rec.favicon=e.target.value;save();});
+    document.getElementById("facebook").addEventListener("change",e=>{rec.social=rec.social||{};rec.social.facebook=e.target.value;save();});
+    document.getElementById("instagram").addEventListener("change",e=>{rec.social=rec.social||{};rec.social.instagram=e.target.value;save();});
+    document.getElementById("tiktok").addEventListener("change",e=>{rec.social=rec.social||{};rec.social.tiktok=e.target.value;save();});
 
     fetchData();
   </script>
