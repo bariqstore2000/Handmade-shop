@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>طلب المنتج - Bariq Store</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <style>
+    body {
+      font-family: 'Cairo', sans-serif;
+      background-color: #fff8fa;
+      margin: 0;
+      padding: 2rem;
+    }
+    h2 {
+      color: #e91e63;
+      text-align: center;
+    }
+    .product-preview {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .product-preview img {
+      max-width: 300px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    form {
+      background-color: #fff0f5;
+      padding: 2rem;
+      border-radius: 15px;
+      max-width: 500px;
+      margin: auto;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    label {
+      display: block;
+      margin: 0.5rem 0 0.2rem;
+      font-weight: bold;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 0.6rem;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-family: inherit;
+    }
+    .btn {
+      background-color: #e91e63;
+      color: white;
+      padding: 0.7rem 1.4rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h2>طلب المنتج</h2>
+
+  <div class="product-preview" id="productPreview"></div>
+
+  <form onsubmit="sendOrder(); return false;">
+    <label>الاسم الكامل:</label>
+    <input type="text" id="name" required>
+
+    <label>رقم الهاتف:</label>
+    <input type="tel" id="phone" required>
+
+    <label>العنوان:</label>
+    <textarea id="address" required></textarea>
+
+    <label>ملاحظات:</label>
+    <textarea id="notes"></textarea>
+
+    <label>رقم التحويل:</label>
+    <input type="text" id="transferNumber" required>
+
+    <label>صورة التحويل:</label>
+    <input type="file" id="paymentImage" accept="image/*" required>
+
+    <button type="submit" class="btn">إرسال الطلب</button>
+  </form>
+
+  <script>
+    const product = JSON.parse(localStorage.getItem("selectedProduct"));
+    const preview = document.getElementById("productPreview");
+
+    if (!product) {
+      preview.innerHTML = "<p>لا يوجد منتج محدد</p>";
+    } else {
+      preview.innerHTML = `
+        <img src="${product.image}" alt="${product.name}">
+        <h3>${product.name}</h3>
+        <p>السعر: ${product.price} جنيه</p>
+      `;
+    }
+
+    async function sendOrder() {
+      const name = document.getElementById("name").value;
+      const phone = document.getElementById("phone").value;
+      const address = document.getElementById("address").value;
+      const notes = document.getElementById("notes").value;
+      const transferNumber = document.getElementById("transferNumber").value;
+      const imageFile = document.getElementById("paymentImage").files[0];
+
+      if (!imageFile) {
+        alert("من فضلك ارفع صورة التحويل");
+        return;
+      }
+
+      const apiKey = "17d9f00d7882056a08ad3e7e68c6b921";
+      const formData = new FormData();
+      formData.append("image", imageFile);
+
+      try {
+        const res = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
+          method: "POST",
+          body: formData
+        });
+        const result = await res.json();
+
+        if (result.success) {
+          const imageUrl = result.data.url;
+
+          const message = 
+            `📦 *طلب جديد من Bariq Store* 📦\n\n` +
+            `👤 الاسم: ${name}\n` +
+            `📞 الهاتف: ${phone}\n` +
+            `📍 العنوان: ${address}\n` +
+            `🛍️ المنتج: ${product.name}\n` +
+            `💰 السعر: ${product.price} جنيه\n` +
+            `📝 ملاحظات: ${notes || "لا توجد"}\n` +
+            `💳 رقم التحويل: ${transferNumber}\n\n` +
+            `💵 صورة التحويل:\n${imageUrl}`;
+
+          const encoded = encodeURIComponent(message);
+          const phoneNumber = "201091212686"; // رقم الواتساب
+          window.open(`https://wa.me/${phoneNumber}?text=${encoded}`, "_blank");
+        } else {
+          alert("فشل في رفع الصورة، حاول مرة أخرى.");
+        }
+      } catch (err) {
+        alert("حدث خطأ أثناء رفع الصورة.");
+        console.error(err);
+      }
+    }
+  </script>
+</body>
+</html>
