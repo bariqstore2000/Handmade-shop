@@ -1,150 +1,116 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>لوحة التحكم | Bariq Store</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>لوحة تحكم Bariq Store</title>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    body {
-      font-family: 'Cairo', sans-serif;
-      margin: 0;
-      padding: 0;
-      background: #fff8f9;
-    }
+    body { font-family:'Cairo',sans-serif; margin:0;padding:0;background:#fff8f9; }
     header {
-      background: linear-gradient(90deg, #e91e63, #f8bbd0);
-      color: white;
-      text-align: center;
-      padding: 1rem;
-      font-size: 1.5rem;
+      background:linear-gradient(90deg,#e91e63,#f8bbd0);color:white;
+      text-align:center;padding:1rem;font-size:1.5rem;
     }
     .container {
-      max-width: 900px;
-      margin: 2rem auto;
-      background: white;
-      border-radius: 15px;
-      padding: 2rem;
-      box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+      max-width:900px;margin:2rem auto;background:white;
+      border-radius:15px;padding:2rem;box-shadow:0 6px 12px rgba(0,0,0,0.1);
     }
-    h2 {
-      margin-top: 0;
-    }
-    input, textarea {
-      width: 100%;
-      padding: 0.7rem;
-      margin-bottom: 1rem;
-      border-radius: 10px;
-      border: 1px solid #ccc;
-    }
-    button {
-      background-color: #e91e63;
-      color: white;
-      padding: 0.7rem 1.5rem;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #c2185b;
-    }
-    .product-item {
-      border: 1px dashed #f8bbd0;
-      padding: 1rem;
-      border-radius: 10px;
-      margin-bottom: 1rem;
+    h2{margin-top:0;}
+    input{width:100%;padding:0.7rem;margin-bottom:1rem;border:1px solid #ccc;border-radius:10px;}
+    textarea{width:100%;padding:0.7rem;margin-bottom:1rem;border:1px solid #ccc;border-radius:10px;}
+    button{background:#e91e63;color:white;border:none;
+      padding:0.7rem 1.5rem;font-size:1rem;border-radius:10px;cursor:pointer;}
+    button:hover{background:#c2185b;}
+    .product-item{
+      border:1px dashed #f8bbd0;padding:1rem;border-radius:10px;margin-bottom:1rem;
     }
   </style>
 </head>
 <body>
   <header>لوحة تحكم Bariq Store</header>
   <div class="container">
+    <h2>إعدادات الموقع</h2>
+    <label>عنوان الموقع</label><input id="siteTitle" placeholder="اسم الموقع">
+    <label>رابط الأيقونة (favicon)</label><input id="favicon" placeholder="رابط PNG صغير">
+
+    <h2>روابط التواصل</h2>
+    <label>فيسبوك</label><input id="facebook" placeholder="رابط فيسبوك">
+    <label>إنستجرام</label><input id="instagram" placeholder="رابط إنستجرام">
+    <label>تيك توك</label><input id="tiktok" placeholder="رابط تيك توك">
+
     <h2>إضافة منتج جديد</h2>
-    <input type="text" id="name" placeholder="اسم المنتج" required>
-    <input type="text" id="price" placeholder="السعر" required>
-    <input type="text" id="image" placeholder="رابط صورة المنتج" required>
-    <button onclick="addProduct()">إضافة</button>
+    <input id="pname" placeholder="اسم المنتج">
+    <input id="pprice" placeholder="السعر">
+    <input id="pimage" placeholder="رابط صورة">
+
+    <button onclick="addProduct()">➕ إضافة منتج</button>
 
     <h2>المنتجات الحالية</h2>
-    <div id="productList">جاري التحميل...</div>
-
-    <h2>روابط التواصل الاجتماعي</h2>
-    <input type="text" id="facebook" placeholder="رابط فيسبوك">
-    <input type="text" id="instagram" placeholder="رابط إنستجرام">
-    <input type="text" id="tiktok" placeholder="رابط تيك توك">
-    <button onclick="saveSocial()">حفظ الروابط</button>
+    <div id="productList">جارٍ التحميل…</div>
   </div>
 
   <script>
-    const binId = "6859dc408a456b7966b45e97";
-    const apiKey = "$2a$10$5mDPhbojylWVObRzAhkf9OHB8AuuykL/cvlGx4rC3V1IRjwvTzA6a";
-    let currentData = {};
+    const binId="6859dc408a456b7966b45e97";
+    const apiKey="$2a$10$5mDPhbojylWVObRzAhkf9OHB8AuuykL/cvlGx4rV1IRjwvTzA6a";
+    let rec={};
 
-    async function fetchData() {
-      const res = await fetch(`https://api.jsonbin.io/v3/b/${binId}/latest`, {
-        headers: { "X-Master-Key": apiKey }
+    async function fetchData(){
+      const r=await fetch(`https://api.jsonbin.io/v3/b/${binId}/latest`,{headers:{"X-Master-Key":apiKey}});
+      rec=(await r.json()).record||{};
+      fillForm(); renderProducts();
+    }
+
+    function fillForm(){
+      document.getElementById("siteTitle").value=rec.siteTitle||"";
+      document.getElementById("favicon").value=rec.favicon||"";
+      document.getElementById("facebook").value=rec.social?.facebook||"";
+      document.getElementById("instagram").value=rec.social?.instagram||"";
+      document.getElementById("tiktok").value=rec.social?.tiktok||"";
+    }
+
+    function renderProducts(){
+      const dl=document.getElementById("productList");
+      dl.innerHTML="";
+      (rec.products||[]).forEach((p,i)=>{
+        const d=document.createElement("div"); d.className="product-item";
+        d.innerHTML=`<strong>${p.name}</strong> — ${p.price} جنيه<br>
+          <img src="${p.image}" width="120"><br>
+          <button onclick="deleteProduct(${i})">🗑️ حذف</button>`;
+        dl.appendChild(d);
       });
-      const json = await res.json();
-      currentData = json.record || {};
-      updateUI();
     }
 
-    function updateUI() {
-      const list = document.getElementById("productList");
-      list.innerHTML = "";
-      (currentData.products || []).forEach((product, index) => {
-        const item = document.createElement("div");
-        item.className = "product-item";
-        item.innerHTML = `
-          <strong>${product.name}</strong> - ${product.price} جنيه
-          <br><img src="${product.image}" width="100">
-          <br><button onclick="deleteProduct(${index})">🗑️ حذف</button>
-        `;
-        list.appendChild(item);
+    async function save(){
+      await fetch(`https://api.jsonbin.io/v3/b/${binId}`,{
+        method:"PUT",
+        headers:{"Content-Type":"application/json","X-Master-Key":apiKey},
+        body:JSON.stringify(rec)
       });
-      if (currentData.social) {
-        document.getElementById("facebook").value = currentData.social.facebook || "";
-        document.getElementById("instagram").value = currentData.social.instagram || "";
-        document.getElementById("tiktok").value = currentData.social.tiktok || "";
-      }
+      fetchData();
     }
 
-    async function addProduct() {
-      const name = document.getElementById("name").value;
-      const price = document.getElementById("price").value;
-      const image = document.getElementById("image").value;
-      if (!name || !price || !image) return alert("يرجى ملء جميع الحقول");
-
-      currentData.products = currentData.products || [];
-      currentData.products.push({ name, price, image });
-      await saveData();
+    function addProduct(){
+      const n=document.getElementById("pname").value;
+      const pr=document.getElementById("pprice").value;
+      const im=document.getElementById("pimage").value;
+      if(!n||!pr||!im)return alert("املأ كل الحقول");
+      rec.products=rec.products||[];
+      rec.products.push({name:n,price:pr,image:im});
+      document.getElementById("pname").value="";
+      document.getElementById("pprice").value="";
+      document.getElementById("pimage").value="";
+      save();
     }
 
-    async function deleteProduct(index) {
-      currentData.products.splice(index, 1);
-      await saveData();
+    function deleteProduct(i){
+      rec.products.splice(i,1); save();
     }
 
-    async function saveSocial() {
-      currentData.social = {
-        facebook: document.getElementById("facebook").value,
-        instagram: document.getElementById("instagram").value,
-        tiktok: document.getElementById("tiktok").value
-      };
-      await saveData();
-    }
-
-    async function saveData() {
-      const res = await fetch(`https://api.jsonbin.io/v3/b/${binId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          "X-Master-Key": apiKey
-        },
-        body: JSON.stringify(currentData)
-      });
-      await fetchData();
-    }
+    document.getElementById("siteTitle").addEventListener("change",e=>{rec.siteTitle=e.target.value;save();});
+    document.getElementById("favicon").addEventListener("change",e=>{rec.favicon=e.target.value;save();});
+    document.getElementById("facebook").addEventListener("change",e=>{rec.social=rec.social||{};rec.social.facebook=e.target.value;save();});
+    document.getElementById("instagram").addEventListener("change",e=>{rec.social=rec.social||{};rec.social.instagram=e.target.value;save();});
+    document.getElementById("tiktok").addEventListener("change",e=>{rec.social=rec.social||{};rec.social.tiktok=e.target.value;save();});
 
     fetchData();
   </script>
