@@ -93,26 +93,26 @@
   </div>
 
   <script>
-    // منتجات افتراضية لأول مرة فقط
+    // منتجات افتراضية - الصور جنب index.html مباشرة
     const defaultProducts = [
       {
         name: "اسورة استالس بيور",
         price: 120,
-        image: "images/aswara.jpg"
+        image: "aswara.jpg"
       },
       {
         name: "سلسلة ناعمة فضي",
         price: 150,
-        image: "images/silsila.jpg"
+        image: "silsila.jpg"
       },
       {
         name: "طقم حلق ذهبي صغير",
         price: 180,
-        image: "images/halq.jpg"
+        image: "halq.jpg"
       }
     ];
 
-    // حفظ افتراضي إذا لم يوجد بيانات في localStorage
+    // حفظ أول مرة فقط
     if (!localStorage.getItem("products")) {
       localStorage.setItem("products", JSON.stringify(defaultProducts));
     }
