@@ -1,14 +1,15 @@
+<!-- index.html -->
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>منتجات Bariq Store</title>
-  <link rel="stylesheet" href="assets/css/style.css">
+  <title>Bariq Store | متجر بريق</title>
   <style>
     body {
       font-family: 'Cairo', sans-serif;
-      background-color: #fff3f7;
+      background-image: linear-gradient(to right, #fff0f5, #ffe4e1);
+      background-attachment: fixed;
       margin: 0;
       padding: 0;
     }
@@ -16,86 +17,119 @@
       background: linear-gradient(90deg, #e91e63, #f8bbd0);
       color: white;
       text-align: center;
-      padding: 1.5rem 1rem;
-      font-size: 1.8rem;
-      font-weight: bold;
+      padding: 2rem 1rem;
+      font-size: 2rem;
       box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      position: relative;
     }
-    .products-container {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-      justify-content: center;
+    header::after {
+      content: "✨";
+      position: absolute;
+      left: 1rem;
+      top: 1rem;
+      font-size: 1.5rem;
+    }
+    .container {
       padding: 2rem;
+      max-width: 1000px;
+      margin: auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 2rem;
     }
-    .product-card {
-      background-color: #fff0f5;
+    .product {
+      border: 2px dashed #f8bbd0;
       border-radius: 15px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      width: 250px;
-      text-align: center;
       padding: 1rem;
+      background-color: #ffffff;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
       transition: transform 0.3s ease;
-      cursor: pointer;
     }
-    .product-card:hover {
+    .product:hover {
       transform: scale(1.03);
     }
-    .product-card img {
+    .product img {
       width: 100%;
-      height: 200px;
-      object-fit: cover;
+      max-width: 250px;
       border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
     }
-    .product-card h3 {
-      margin: 0.5rem 0 0.2rem;
-    }
-    .product-card p {
-      margin: 0;
-      font-weight: bold;
-      color: #e91e63;
-    }
-    .no-products {
-      text-align: center;
+    .product h2 {
       font-size: 1.2rem;
-      color: #999;
-      margin-top: 3rem;
+      margin: 0.5rem 0;
+      color: #880e4f;
+    }
+    .product p {
+      margin: 0.5rem 0;
+      font-weight: bold;
+      color: #333;
+    }
+    .btn {
+      display: inline-block;
+      margin-top: 0.8rem;
+      padding: 0.5rem 1rem;
+      background-color: #e91e63;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .btn:hover {
+      background-color: #c2185b;
     }
   </style>
 </head>
 <body>
   <header>
-    ✨ منتجات Bariq Store
+    متجر بريق | Bariq Store ✨
   </header>
 
-  <div class="products-container" id="productsContainer">
-    <!-- سيتم توليد المنتجات تلقائياً هنا -->
+  <div class="container" id="productsContainer">
+    <!-- المنتجات تظهر تلقائيًا هنا -->
   </div>
 
   <script>
+    // منتجات افتراضية لأول مرة فقط
+    const defaultProducts = [
+      {
+        name: "اسورة استالس بيور",
+        price: 120,
+        image: "images/aswara.jpg"
+      },
+      {
+        name: "سلسلة ناعمة فضي",
+        price: 150,
+        image: "images/silsila.jpg"
+      },
+      {
+        name: "طقم حلق ذهبي صغير",
+        price: 180,
+        image: "images/halq.jpg"
+      }
+    ];
+
+    // حفظ افتراضي إذا لم يوجد بيانات في localStorage
+    if (!localStorage.getItem("products")) {
+      localStorage.setItem("products", JSON.stringify(defaultProducts));
+    }
+
     const products = JSON.parse(localStorage.getItem("products") || "[]");
     const container = document.getElementById("productsContainer");
 
-    if (products.length === 0) {
-      container.innerHTML = "<p class='no-products'>لا توجد منتجات حالياً</p>";
-    } else {
-      products.forEach((product) => {
-        const card = document.createElement("div");
-        card.className = "product-card";
-        card.onclick = () => {
-          localStorage.setItem("selectedProduct", JSON.stringify(product));
-          window.location.href = "product.html";
-        };
-
-        card.innerHTML = `
-          <img src="${product.image}" alt="${product.name}">
-          <h3>${product.name}</h3>
-          <p>${product.price} جنيه</p>
-        `;
-
-        container.appendChild(card);
-      });
-    }
+    products.forEach((p, index) => {
+      container.innerHTML += `
+        <div class="product">
+          <img src="${p.image}" alt="${p.name}">
+          <h2>${p.name}</h2>
+          <p>السعر: ${p.price} جنيه</p>
+          <a href="product.html?id=${index}" class="btn">عرض التفاصيل</a>
+        </div>
+      `;
+    });
   </script>
 </body>
 </html>
