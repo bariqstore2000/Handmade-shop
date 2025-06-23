@@ -1,54 +1,107 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>تفاصيل المنتج | Bariq Store</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Cairo', sans-serif; background: #fff0f5; margin: 0; padding: 0; }
-    header { background: linear-gradient(90deg, #e91e63, #f8bbd0); color: white; text-align: center; padding: 2rem; font-size: 2rem; }
-    .container { max-width: 800px; margin: auto; padding: 2rem; }
-    .product { background: #fff; padding: 1.5rem; border-radius: 12px; box-shadow: 0 0 10px rgba(0,0,0,0.1); text-align: center; }
-    img { width: 100%; max-width: 350px; border-radius: 12px; }
-    form { margin-top: 2rem; background: #fff8fb; padding: 1.5rem; border-radius: 12px; box-shadow: 0 0 10px rgba(0,0,0,0.05); }
-    label { display: block; margin-top: 1rem; font-weight: bold; }
-    input, textarea, select { width: 100%; padding: 0.5rem; margin-top: 0.3rem; border-radius: 8px; border: 1px solid #ccc; font-family: inherit; }
-    button { margin-top: 1.5rem; padding: 0.7rem 1.5rem; background: #e91e63; color: white; border: none; border-radius: 8px; cursor: pointer; }
+    body {
+      font-family: 'Cairo', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to top left, #fff0f5, #ffe4e1);
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      background: linear-gradient(90deg, #e91e63, #f8bbd0);
+      color: white;
+      padding: 1.5rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      border-bottom-left-radius: 30px;
+      border-bottom-right-radius: 30px;
+    }
+    header .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 1.7rem;
+    }
+    header .logo img {
+      width: 28px;
+      height: 28px;
+    }
+    #socialLinks a img {
+      width: 26px;
+      height: 26px;
+      transition: transform 0.3s ease;
+    }
+    #socialLinks a:hover img {
+      transform: scale(1.2);
+    }
+    .container {
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 1rem;
+      background-color: #fff;
+      border-radius: 20px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    }
+    .product-img {
+      width: 100%;
+      border-radius: 15px;
+      box-shadow: 0 0 12px rgba(0,0,0,0.1);
+    }
+    .form-section {
+      margin-top: 2rem;
+    }
+    label {
+      display: block;
+      margin: 0.5rem 0 0.2rem;
+      font-weight: bold;
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 0.6rem;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      margin-bottom: 1rem;
+      font-family: inherit;
+    }
+    .btn {
+      background-color: #e91e63;
+      color: white;
+      padding: 0.7rem 1.5rem;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background-color 0.3s ease;
+    }
+    .btn:hover {
+      background-color: #c2185b;
+    }
   </style>
 </head>
 <body>
-  <header>تفاصيل المنتج</header>
-  <div class="container">
-    <div class="product" id="productDetails">جارٍ تحميل التفاصيل...</div>
+  <header>
+    <div class="logo">
+      <img src="https://twemoji.maxcdn.com/v/latest/72x72/2728.png" alt="✨">
+      <span>متجر بريق | Bariq Store</span>
+    </div>
+    <div id="socialLinks"></div>
+  </header>
 
-    <form onsubmit="uploadAndSend(); return false;">
-      <h3>نموذج الطلب</h3>
-      <label>الاسم الكامل:</label>
-      <input type="text" id="name" required>
-
-      <label>رقم الهاتف:</label>
-      <input type="tel" id="phone" required>
-
-      <label>العنوان:</label>
-      <textarea id="address" required></textarea>
-
-      <label>ملاحظات:</label>
-      <textarea id="notes"></textarea>
-
-      <label>رقم التحويل:</label>
-      <input type="text" id="transferNumber" required>
-
-      <label>صورة التحويل:</label>
-      <input type="file" id="paymentImage" accept="image/*" required>
-
-      <button type="submit">إرسال الطلب عبر واتساب</button>
-    </form>
+  <div class="container" id="productContainer">
+    جاري تحميل المنتج...
   </div>
 
   <script>
     const binId = "6859dc408a456b7966b45e97";
     const apiKey = "$2a$10$5mDPhbojylWVObRzAhkf9OHB8AuuykL/cvlGx4rC3V1IRjwvTzA6a";
-    let selectedProduct;
 
     const urlParams = new URLSearchParams(window.location.search);
     const productId = parseInt(urlParams.get("id"));
@@ -59,66 +112,94 @@
     .then(res => res.json())
     .then(data => {
       const product = data.record.products[productId];
-      selectedProduct = product;
-      const detailsDiv = document.getElementById("productDetails");
+      const social = data.record.social;
+
+      const container = document.getElementById("productContainer");
+
       if (!product) {
-        detailsDiv.innerHTML = "<p>لم يتم العثور على المنتج.</p>";
-      } else {
-        detailsDiv.innerHTML = `
-          <img src="${product.image}" alt="${product.name}">
-          <h2>${product.name}</h2>
-          <p>السعر: ${product.price} جنيه</p>
-        `;
-      }
-    });
-  </script>
-
-  <script>
-    async function uploadAndSend() {
-      const name = document.getElementById("name").value;
-      const phone = document.getElementById("phone").value;
-      const address = document.getElementById("address").value;
-      const notes = document.getElementById("notes").value || "لا توجد";
-      const transferNumber = document.getElementById("transferNumber").value;
-      const imageFile = document.getElementById("paymentImage").files[0];
-
-      if (!imageFile || !selectedProduct) {
-        alert("يرجى اختيار المنتج ورفع صورة التحويل.");
+        container.innerHTML = "<p>هذا المنتج غير موجود.</p>";
         return;
       }
 
-      const imgbbApiKey = "17d9f00d7882056a08ad3e7e68c6b921";
+      container.innerHTML = `
+        <img src="${product.image}" alt="${product.name}" class="product-img">
+        <h2>${product.name}</h2>
+        <p><strong>السعر:</strong> ${product.price} جنيه</p>
+
+        <div class="form-section">
+          <h3>نموذج الطلب</h3>
+          <form onsubmit="sendOrder(event)">
+            <label>الاسم:</label>
+            <input type="text" id="name" required>
+
+            <label>رقم الهاتف:</label>
+            <input type="tel" id="phone" required>
+
+            <label>العنوان:</label>
+            <textarea id="address" required></textarea>
+
+            <label>رقم التحويل:</label>
+            <input type="text" id="transferNumber" required>
+
+            <label>صورة التحويل:</label>
+            <input type="file" id="paymentImage" accept="image/*" required>
+
+            <label>ملاحظات:</label>
+            <textarea id="notes"></textarea>
+
+            <button class="btn" type="submit">إرسال الطلب</button>
+          </form>
+        </div>
+      `;
+
+      const socialDiv = document.getElementById("socialLinks");
+      if (social) {
+        if (social.facebook)
+          socialDiv.innerHTML += `<a href="${social.facebook}" target="_blank"><img src="https://twemoji.maxcdn.com/v/latest/72x72/1f30d.png" alt="🌐"></a>`;
+        if (social.instagram)
+          socialDiv.innerHTML += `<a href="${social.instagram}" target="_blank"><img src="https://twemoji.maxcdn.com/v/latest/72x72/1f4f7.png" alt="📸"></a>`;
+        if (social.tiktok)
+          socialDiv.innerHTML += `<a href="${social.tiktok}" target="_blank"><img src="https://twemoji.maxcdn.com/v/latest/72x72/1f3b5.png" alt="🎵"></a>`;
+      }
+    });
+
+    async function sendOrder(event) {
+      event.preventDefault();
+      const name = document.getElementById("name").value;
+      const phone = document.getElementById("phone").value;
+      const address = document.getElementById("address").value;
+      const notes = document.getElementById("notes").value;
+      const transferNumber = document.getElementById("transferNumber").value;
+      const imageFile = document.getElementById("paymentImage").files[0];
+
+      if (!imageFile) return alert("يرجى رفع صورة التحويل");
+
       const formData = new FormData();
       formData.append("image", imageFile);
 
       try {
-        const res = await fetch(`https://api.imgbb.com/1/upload?key=${imgbbApiKey}`, {
+        const res = await fetch("https://api.imgbb.com/1/upload?key=17d9f00d7882056a08ad3e7e68c6b921", {
           method: "POST",
           body: formData
         });
+
         const result = await res.json();
-        if (!result.success) throw new Error("رفع الصورة فشل");
+        if (result.success) {
+          const imageUrl = result.data.url;
+          const message =
+            `📦 *طلب جديد من Bariq Store* \n\n` +
+            `👤 الاسم: ${name}\n` +
+            `📞 الهاتف: ${phone}\n` +
+            `📍 العنوان: ${address}\n` +
+            `🛍️ المنتج: ${productId}\n` +
+            `💳 رقم التحويل: ${transferNumber}\n` +
+            `📝 ملاحظات: ${notes || "لا توجد"}\n` +
+            `💵 صورة التحويل:\n${imageUrl}`;
 
-        const imageUrl = result.data.url;
-
-        const message = `
-📦 *طلب جديد من Bariq Store* 📦
-
-👤 الاسم: ${name}
-📞 الهاتف: ${phone}
-📍 العنوان: ${address}
-🛍️ المنتج: ${selectedProduct.name}
-💰 السعر: ${selectedProduct.price} جنيه
-📝 ملاحظات: ${notes}
-💳 رقم التحويل: ${transferNumber}
-🖼️ صورة التحويل: ${imageUrl}
-        `.trim();
-
-        const encoded = encodeURIComponent(message);
-        window.open(`https://wa.me/201091212686?text=${encoded}`, "_blank");
+          window.open(`https://wa.me/201091212686?text=${encodeURIComponent(message)}`, "_blank");
+        }
       } catch (err) {
-        console.error(err);
-        alert("حدث خطأ أثناء إرسال الطلب.");
+        alert("فشل في رفع الصورة أو إرسال الطلب.");
       }
     }
   </script>
