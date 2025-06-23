@@ -10,10 +10,17 @@
       font-family: 'Cairo', sans-serif;
       background-color: #fff8fa;
       padding: 2rem;
+      margin: 0;
     }
-    h1 {
+    header {
+      background: linear-gradient(90deg, #e91e63, #f8bbd0);
+      color: white;
       text-align: center;
-      color: #e91e63;
+      padding: 1.2rem;
+      font-size: 1.8rem;
+      font-weight: bold;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     }
     .top-bar {
       text-align: center;
@@ -26,7 +33,7 @@
       border: none;
       border-radius: 8px;
       cursor: pointer;
-      margin-bottom: 1rem;
+      margin: 0.4rem;
     }
     .btn:hover {
       background-color: #c2185b;
@@ -37,6 +44,7 @@
       padding: 1rem;
       border-radius: 10px;
       margin-bottom: 1rem;
+      text-align: center;
     }
     .product-card img {
       width: 100px;
@@ -45,9 +53,6 @@
     }
     .product-actions {
       margin-top: 0.5rem;
-    }
-    .product-actions button {
-      margin-left: 0.5rem;
     }
     .form-popup {
       display: none;
@@ -64,12 +69,13 @@
       padding: 0.5rem;
       border-radius: 8px;
       border: 1px solid #ccc;
+      font-family: inherit;
     }
   </style>
 </head>
 <body>
 
-  <h1>لوحة التحكم - Bariq Store</h1>
+  <header>لوحة التحكم - Bariq Store</header>
 
   <div class="top-bar">
     <button class="btn" onclick="toggleForm()">➕ إضافة منتج</button>
@@ -86,6 +92,7 @@
     <label>رابط الصورة:</label>
     <input type="text" id="productImage" required>
     <button class="btn" onclick="saveProduct()">💾 حفظ</button>
+    <button class="btn" onclick="toggleForm(false)">❌ إلغاء</button>
   </div>
 
   <div id="productList"></div>
@@ -130,10 +137,15 @@
     }
 
     function saveProduct() {
-      const name = document.getElementById("productName").value;
-      const price = document.getElementById("productPrice").value;
-      const image = document.getElementById("productImage").value;
+      const name = document.getElementById("productName").value.trim();
+      const price = document.getElementById("productPrice").value.trim();
+      const image = document.getElementById("productImage").value.trim();
       const index = document.getElementById("editIndex").value;
+
+      if (!name || !price || !image) {
+        alert("يرجى ملء جميع الحقول");
+        return;
+      }
 
       const product = { name, price, image };
 
