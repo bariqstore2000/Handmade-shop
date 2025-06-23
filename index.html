@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>متجر بريق | Bariq Store</title>
+  <title id="siteTitle">متجر بريق</title>
+  <link id="faviconTag" rel="icon" href="favicon.png" type="image/png">
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
   <style>
     body {
@@ -14,7 +15,6 @@
       background-attachment: fixed;
       overflow-x: hidden;
     }
-
     header {
       display: flex;
       justify-content: space-between;
@@ -27,41 +27,34 @@
       border-bottom-left-radius: 30px;
       border-bottom-right-radius: 30px;
     }
-
     header .logo {
       display: flex;
       align-items: center;
       gap: 0.5rem;
       font-size: 1.7rem;
     }
-
     header .logo img {
       width: 28px;
       height: 28px;
     }
-
     #socialLinks a img {
       width: 26px;
       height: 26px;
       transition: transform 0.3s ease;
     }
-
     #socialLinks a:hover img {
       transform: scale(1.2);
     }
-
     .container {
       max-width: 1100px;
       margin: 2rem auto;
       padding: 1rem;
     }
-
     .products {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
       gap: 2rem;
     }
-
     .product {
       background: #ffffffc9;
       border-radius: 20px;
@@ -71,12 +64,10 @@
       transition: transform 0.3s ease, box-shadow 0.3s ease;
       border: 2px dashed #f8bbd0;
     }
-
     .product:hover {
       transform: translateY(-5px);
       box-shadow: 0 12px 24px rgba(0,0,0,0.15);
     }
-
     .product img {
       width: 100%;
       max-width: 280px;
@@ -84,7 +75,6 @@
       box-shadow: 0 0 12px rgba(0,0,0,0.08);
       margin-bottom: 1rem;
     }
-
     .btn {
       display: inline-block;
       margin-top: 0.5rem;
@@ -98,12 +88,10 @@
       text-decoration: none;
       transition: background-color 0.3s ease, transform 0.2s;
     }
-
     .btn:hover {
       background-color: #c2185b;
       transform: scale(1.05);
     }
-
     .decor-heart {
       position: fixed;
       top: 10%;
@@ -112,17 +100,12 @@
       opacity: 0.05;
       transform: rotate(-15deg);
     }
-
     .decor-star {
       position: fixed;
       bottom: 5%;
       right: -30px;
       width: 100px;
       opacity: 0.07;
-    }
-
-    pre, code {
-      display: none !important;
     }
   </style>
 </head>
@@ -135,7 +118,6 @@
     <div id="socialLinks"></div>
   </header>
 
-  <!-- ديكورات -->
   <img src="https://i.imgur.com/Ly1ELeT.png" class="decor-heart" alt="heart decor">
   <img src="https://i.imgur.com/LJZ5OaC.png" class="decor-star" alt="star decor">
 
@@ -155,7 +137,9 @@
       const productsContainer = document.getElementById("products");
       const products = data.record.products || [];
       const social = data.record.social;
+      const site = data.record.site;
 
+      // منتجات
       if (products.length === 0) {
         productsContainer.innerHTML = "<p>لا توجد منتجات حالياً.</p>";
       } else {
@@ -173,6 +157,7 @@
         });
       }
 
+      // روابط السوشيال
       const socialDiv = document.getElementById("socialLinks");
       if (social) {
         if (social.facebook)
@@ -182,10 +167,17 @@
         if (social.tiktok)
           socialDiv.innerHTML += `<a href="${social.tiktok}" target="_blank"><img src="https://twemoji.maxcdn.com/v/latest/72x72/1f3b5.png" alt="🎵"></a>`;
       }
-    })
-    .catch(error => {
-      console.error("فشل في تحميل البيانات:", error);
-      document.getElementById("products").innerHTML = "<p style='color: red;'>حدث خطأ أثناء تحميل المنتجات.</p>";
+
+      // عنوان الموقع والأيقونة
+      if (site) {
+        if (site.title) {
+          document.title = site.title;
+          document.getElementById("siteTitle").textContent = site.title;
+        }
+        if (site.favicon) {
+          document.getElementById("faviconTag").href = site.favicon;
+        }
+      }
     });
   </script>
 </body>
