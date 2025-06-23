@@ -89,47 +89,27 @@
   </header>
 
   <div class="container" id="productsContainer">
-    <!-- المنتجات تظهر تلقائيًا هنا -->
+    <!-- المنتجات تظهر هنا -->
   </div>
 
   <script>
-    // منتجات افتراضية - الصور جنب index.html مباشرة
-    const defaultProducts = [
-      {
-        name: "اسورة استالس بيور",
-        price: 120,
-        image: "aswara.jpg"
-      },
-      {
-        name: "سلسلة ناعمة فضي",
-        price: 150,
-        image: "silsila.jpg"
-      },
-      {
-        name: "طقم حلق ذهبي صغير",
-        price: 180,
-        image: "halq.jpg"
-      }
-    ];
-
-    // حفظ أول مرة فقط
-    if (!localStorage.getItem("products")) {
-      localStorage.setItem("products", JSON.stringify(defaultProducts));
-    }
-
-    const products = JSON.parse(localStorage.getItem("products") || "[]");
     const container = document.getElementById("productsContainer");
+    const products = JSON.parse(localStorage.getItem("products") || "[]");
 
-    products.forEach((p, index) => {
-      container.innerHTML += `
-        <div class="product">
-          <img src="${p.image}" alt="${p.name}">
-          <h2>${p.name}</h2>
-          <p>السعر: ${p.price} جنيه</p>
-          <a href="product.html?id=${index}" class="btn">عرض التفاصيل</a>
-        </div>
-      `;
-    });
+    if (products.length === 0) {
+      container.innerHTML = "<p style='text-align:center;'>لا توجد منتجات حتى الآن.</p>";
+    } else {
+      products.forEach((p, index) => {
+        container.innerHTML += `
+          <div class="product">
+            <img src="${p.image}" alt="${p.name}">
+            <h2>${p.name}</h2>
+            <p>السعر: ${p.price} جنيه</p>
+            <a href="product.html?id=${index}" class="btn">عرض التفاصيل</a>
+          </div>
+        `;
+      });
+    }
   </script>
 </body>
 </html>
