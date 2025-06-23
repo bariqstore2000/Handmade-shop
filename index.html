@@ -1,4 +1,3 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -6,110 +5,50 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Bariq Store | متجر بريق</title>
   <style>
-    body {
-      font-family: 'Cairo', sans-serif;
-      background-image: linear-gradient(to right, #fff0f5, #ffe4e1);
-      background-attachment: fixed;
-      margin: 0;
-      padding: 0;
-    }
-    header {
-      background: linear-gradient(90deg, #e91e63, #f8bbd0);
-      color: white;
-      text-align: center;
-      padding: 2rem 1rem;
-      font-size: 2rem;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      position: relative;
-    }
-    header::after {
-      content: "✨";
-      position: absolute;
-      left: 1rem;
-      top: 1rem;
-      font-size: 1.5rem;
-    }
-    .container {
-      padding: 2rem;
-      max-width: 1000px;
-      margin: auto;
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 2rem;
-    }
-    .product {
-      border: 2px dashed #f8bbd0;
-      border-radius: 15px;
-      padding: 1rem;
-      background-color: #ffffff;
-      text-align: center;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-      transition: transform 0.3s ease;
-    }
-    .product:hover {
-      transform: scale(1.03);
-    }
-    .product img {
-      width: 100%;
-      max-width: 250px;
-      border-radius: 12px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.05);
-    }
-    .product h2 {
-      font-size: 1.2rem;
-      margin: 0.5rem 0;
-      color: #880e4f;
-    }
-    .product p {
-      margin: 0.5rem 0;
-      font-weight: bold;
-      color: #333;
-    }
-    .btn {
-      display: inline-block;
-      margin-top: 0.8rem;
-      padding: 0.5rem 1rem;
-      background-color: #e91e63;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      font-size: 1rem;
-      text-decoration: none;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-    .btn:hover {
-      background-color: #c2185b;
-    }
+    body { font-family: 'Cairo', sans-serif; background: #fff0f5; margin: 0; padding: 0; }
+    header { background: linear-gradient(90deg, #e91e63, #f8bbd0); color: white; text-align: center; padding: 2rem 1rem; font-size: 2rem; }
+    .container { padding: 2rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1.5rem; max-width: 1000px; margin: auto; }
+    .product { background: #fff; border-radius: 12px; box-shadow: 0 0 10px rgba(0,0,0,0.1); padding: 1rem; text-align: center; }
+    .product img { width: 100%; max-width: 250px; border-radius: 12px; }
+    .btn { background: #e91e63; color: white; padding: 0.5rem 1rem; border-radius: 8px; display: inline-block; margin-top: 0.5rem; text-decoration: none; }
   </style>
 </head>
 <body>
-  <header>
-    متجر بريق | Bariq Store ✨
-  </header>
-
-  <div class="container" id="productsContainer">
-    <!-- المنتجات تظهر هنا -->
-  </div>
+  <header>متجر بريق | Bariq Store ✨</header>
+  <div class="container" id="productsContainer">جاري تحميل المنتجات...</div>
 
   <script>
     const container = document.getElementById("productsContainer");
-    const products = JSON.parse(localStorage.getItem("products") || "[]");
 
-    if (products.length === 0) {
-      container.innerHTML = "<p style='text-align:center;'>لا توجد منتجات حتى الآن.</p>";
-    } else {
-      products.forEach((p, index) => {
+    fetch("https://api.jsonbin.io/v3/b/6859dc408a456b7966b45e97/latest", {
+      headers: {
+        "X-Master-Key": "$2a$10$5mDPhbojylWVObRzAhkf9OHB8AuuykL/cvlGx4rC3V1IRjwvTzA6a"
+      }
+    })
+    .then(res => res.json())
+    .then(data => {
+      const products = data.record.products;
+      if (!products || products.length === 0) {
+        container.innerHTML = "<p>لا توجد منتجات حالياً.</p>";
+        return;
+      }
+
+      container.innerHTML = "";
+      products.forEach((p, i) => {
         container.innerHTML += `
           <div class="product">
             <img src="${p.image}" alt="${p.name}">
-            <h2>${p.name}</h2>
+            <h3>${p.name}</h3>
             <p>السعر: ${p.price} جنيه</p>
-            <a href="product.html?id=${index}" class="btn">عرض التفاصيل</a>
+            <a class="btn" href="product.html?id=${i}">عرض التفاصيل</a>
           </div>
         `;
       });
-    }
+    })
+    .catch(err => {
+      console.error(err);
+      container.innerHTML = "<p>فشل في تحميل المنتجات.</p>";
+    });
   </script>
 </body>
 </html>
