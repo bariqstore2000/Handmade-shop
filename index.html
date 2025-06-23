@@ -1,72 +1,94 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Bariq Store</title>
   <style>
     body {
-      font-family: 'Tahoma', sans-serif;
-      background-color: #fefefe;
+      font-family: 'Cairo', sans-serif;
+      background-image: linear-gradient(to right, #fff0f5, #ffe4e1);
+      background-attachment: fixed;
       margin: 0;
       padding: 0;
       direction: rtl;
     }
     header {
-      background-color: #e91e63;
+      background: linear-gradient(90deg, #e91e63, #f8bbd0);
       color: white;
       text-align: center;
-      padding: 1rem;
+      padding: 2rem 1rem;
+      font-size: 2rem;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      position: relative;
+    }
+    header::after {
+      content: "✨";
+      position: absolute;
+      left: 1rem;
+      top: 1rem;
+      font-size: 1.5rem;
     }
     .container {
       padding: 2rem;
-      max-width: 800px;
+      max-width: 900px;
       margin: auto;
     }
     .product {
-      border: 1px solid #ccc;
-      border-radius: 10px;
-      padding: 1rem;
+      border: 2px dashed #f8bbd0;
+      border-radius: 15px;
+      padding: 1.5rem;
       margin-bottom: 2rem;
+      background-color: #ffffff;
       text-align: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
     }
     .product img {
       width: 100%;
-      max-width: 300px;
-      border-radius: 10px;
+      max-width: 350px;
+      border-radius: 15px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
     }
     .btn {
       display: inline-block;
       margin-top: 1rem;
-      padding: 0.5rem 1rem;
+      padding: 0.75rem 1.5rem;
       background-color: #e91e63;
       color: white;
       border: none;
-      border-radius: 5px;
+      border-radius: 10px;
+      font-size: 1rem;
       text-decoration: none;
       cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .btn:hover {
+      background-color: #c2185b;
     }
     .form-section {
-      background-color: #f9f9f9;
-      padding: 1rem;
-      border-radius: 10px;
-      margin-top: 2rem;
+      background-color: #fff0f5;
+      padding: 2rem;
+      border-radius: 15px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.05);
     }
     label {
       display: block;
       margin: 0.5rem 0 0.2rem;
+      font-weight: bold;
     }
     input, select, textarea {
       width: 100%;
-      padding: 0.5rem;
+      padding: 0.6rem;
       border: 1px solid #ccc;
-      border-radius: 5px;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      font-family: inherit;
     }
   </style>
 </head>
 <body>
   <header>
-    <h1>Bariq Store</h1>
+    متجر بريق | Bariq Store ✨
   </header>
 
   <div class="container">
@@ -81,13 +103,13 @@
       <h3>طريقة الدفع</h3>
       <p>📱 فودافون كاش: <strong>01091212686</strong></p>
       <p>🏦 انستا باي: <strong>01091212686</strong></p>
-      <p>بعد الدفع، من فضلك املأ البيانات التالية وسيتم توجيهك مباشرة إلى واتساب:</p>
+      <p>بعد الدفع، املأ البيانات وسيتم توجيهك للواتساب مباشرة:</p>
 
       <form onsubmit="uploadAndSend(); return false;">
         <label>الاسم الكامل:</label>
         <input type="text" id="name" required>
 
-        <label>رقم الهاتف:</label>
+        <label>رقم الهاتف للتواصل:</label>
         <input type="tel" id="phone" required>
 
         <label>العنوان:</label>
@@ -100,6 +122,9 @@
 
         <label>ملاحظات:</label>
         <textarea id="notes"></textarea>
+
+        <label>رقم التحويل:</label>
+        <input type="tel" id="transferNumber" required>
 
         <label>صورة التحويل:</label>
         <input type="file" id="paymentImage" accept="image/*" required>
@@ -116,6 +141,7 @@
       const address = document.getElementById("address").value;
       const product = document.getElementById("product").value;
       const notes = document.getElementById("notes").value;
+      const transferNumber = document.getElementById("transferNumber").value;
       const imageFile = document.getElementById("paymentImage").files[0];
 
       if (!imageFile) {
@@ -123,7 +149,7 @@
         return;
       }
 
-      const apiKey = "17d9f00d7882056a08ad3e7e68c6b921"; // ← مفتاحك الحقيقي
+      const apiKey = "17d9f00d7882056a08ad3e7e68c6b921";
       const formData = new FormData();
       formData.append("image", imageFile);
 
@@ -138,17 +164,18 @@
         if (result.success) {
           const imageUrl = result.data.url;
 
-const message = 
-  `📦 *طلب جديد من Bariq Store* 📦\n\n` +
-  `👤 الاسم: ${name}\n` +
-  `📞 الهاتف: ${phone}\n` +
-  `📍 العنوان: ${address}\n` +
-  `🛍️ المنتج: ${product}\n` +
-  `📝 ملاحظات: ${notes || "لا توجد"}\n\n` +
-  `💵 *صورة التحويل:*\n${imageUrl}`;
+          const message = 
+            `📦 *طلب جديد من Bariq Store* 📦\n\n` +
+            `👤 الاسم: ${name}\n` +
+            `📞 الهاتف: ${phone}\n` +
+            `📍 العنوان: ${address}\n` +
+            `🛍️ المنتج: ${product}\n` +
+            `📝 ملاحظات: ${notes || "لا توجد"}\n` +
+            `💳 رقم التحويل: ${transferNumber}\n\n` +
+            `💵 صورة التحويل:\n${imageUrl}`;
 
           const encodedMessage = encodeURIComponent(message);
-          const whatsappNumber = "201091212686"; // رقمك بدون صفر
+          const whatsappNumber = "201091212686";
           window.open(`https://wa.me/${whatsappNumber}?text=${encodedMessage}`, "_blank");
         } else {
           alert("حدث خطأ أثناء رفع الصورة. حاول مرة أخرى.");
