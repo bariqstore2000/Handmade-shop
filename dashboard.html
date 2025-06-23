@@ -82,7 +82,6 @@
   <div class="logout" onclick="logout()">تسجيل الخروج</div>
 
   <script>
-    // تحقق من تسجيل الدخول
     if (localStorage.getItem("isLoggedIn") !== "true") {
       window.location.href = "login.html";
     }
@@ -133,7 +132,6 @@
       localStorage.setItem("products", JSON.stringify(products));
       renderProducts();
 
-      // إعادة تعيين الحقول
       document.getElementById("newName").value = "";
       document.getElementById("newPrice").value = "";
       document.getElementById("newImage").value = "";
