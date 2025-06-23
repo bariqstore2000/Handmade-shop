@@ -1,100 +1,152 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>لوحة التحكم | Bariq Store</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Cairo', sans-serif; background: #fce4ec; padding: 2rem; }
-    .product { background: #fff; padding: 1rem; border-radius: 12px; margin-bottom: 1rem; box-shadow: 0 0 5px rgba(0,0,0,0.1); }
-    input { width: 100%; margin: 0.3rem 0; padding: 0.5rem; border-radius: 6px; border: 1px solid #ccc; }
-    button { padding: 0.5rem 1rem; border: none; background: #e91e63; color: white; border-radius: 8px; margin-top: 0.5rem; cursor: pointer; }
-    h2 { text-align: center; color: #c2185b; }
+    body {
+      font-family: 'Cairo', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #fff8f9;
+    }
+    header {
+      background: linear-gradient(90deg, #e91e63, #f8bbd0);
+      color: white;
+      text-align: center;
+      padding: 1rem;
+      font-size: 1.5rem;
+    }
+    .container {
+      max-width: 900px;
+      margin: 2rem auto;
+      background: white;
+      border-radius: 15px;
+      padding: 2rem;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+    }
+    h2 {
+      margin-top: 0;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 0.7rem;
+      margin-bottom: 1rem;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background-color: #e91e63;
+      color: white;
+      padding: 0.7rem 1.5rem;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #c2185b;
+    }
+    .product-item {
+      border: 1px dashed #f8bbd0;
+      padding: 1rem;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+    }
   </style>
 </head>
 <body>
-  <h2>لوحة تحكم المنتجات</h2>
-  <div id="productList"></div>
+  <header>لوحة تحكم Bariq Store</header>
+  <div class="container">
+    <h2>إضافة منتج جديد</h2>
+    <input type="text" id="name" placeholder="اسم المنتج" required>
+    <input type="text" id="price" placeholder="السعر" required>
+    <input type="text" id="image" placeholder="رابط صورة المنتج" required>
+    <button onclick="addProduct()">إضافة</button>
 
-  <h3>إضافة منتج جديد</h3>
-  <input type="text" id="newName" placeholder="اسم المنتج">
-  <input type="number" id="newPrice" placeholder="السعر">
-  <input type="text" id="newImage" placeholder="رابط الصورة">
-  <button onclick="addProduct()">إضافة</button>
+    <h2>المنتجات الحالية</h2>
+    <div id="productList">جاري التحميل...</div>
+
+    <h2>روابط التواصل الاجتماعي</h2>
+    <input type="text" id="facebook" placeholder="رابط فيسبوك">
+    <input type="text" id="instagram" placeholder="رابط إنستجرام">
+    <input type="text" id="tiktok" placeholder="رابط تيك توك">
+    <button onclick="saveSocial()">حفظ الروابط</button>
+  </div>
 
   <script>
     const binId = "6859dc408a456b7966b45e97";
     const apiKey = "$2a$10$5mDPhbojylWVObRzAhkf9OHB8AuuykL/cvlGx4rC3V1IRjwvTzA6a";
-    let products = [];
+    let currentData = {};
 
-    function loadProducts() {
-      fetch(`https://api.jsonbin.io/v3/b/${binId}/latest`, {
+    async function fetchData() {
+      const res = await fetch(`https://api.jsonbin.io/v3/b/${binId}/latest`, {
         headers: { "X-Master-Key": apiKey }
-      })
-      .then(res => res.json())
-      .then(data => {
-        products = data.record.products || [];
-        renderProducts();
       });
+      const json = await res.json();
+      currentData = json.record || {};
+      updateUI();
     }
 
-    function renderProducts() {
+    function updateUI() {
       const list = document.getElementById("productList");
       list.innerHTML = "";
-      products.forEach((p, i) => {
-        list.innerHTML += `
-          <div class="product">
-            <input value="${p.name}" onchange="editProduct(${i}, 'name', this.value)">
-            <input value="${p.price}" onchange="editProduct(${i}, 'price', this.value)">
-            <input value="${p.image}" onchange="editProduct(${i}, 'image', this.value)">
-            <button onclick="deleteProduct(${i})">حذف</button>
-          </div>
+      (currentData.products || []).forEach((product, index) => {
+        const item = document.createElement("div");
+        item.className = "product-item";
+        item.innerHTML = `
+          <strong>${product.name}</strong> - ${product.price} جنيه
+          <br><img src="${product.image}" width="100">
+          <br><button onclick="deleteProduct(${index})">🗑️ حذف</button>
         `;
+        list.appendChild(item);
       });
+      if (currentData.social) {
+        document.getElementById("facebook").value = currentData.social.facebook || "";
+        document.getElementById("instagram").value = currentData.social.instagram || "";
+        document.getElementById("tiktok").value = currentData.social.tiktok || "";
+      }
     }
 
-    function updateBin() {
-      fetch(`https://api.jsonbin.io/v3/b/${binId}`, {
+    async function addProduct() {
+      const name = document.getElementById("name").value;
+      const price = document.getElementById("price").value;
+      const image = document.getElementById("image").value;
+      if (!name || !price || !image) return alert("يرجى ملء جميع الحقول");
+
+      currentData.products = currentData.products || [];
+      currentData.products.push({ name, price, image });
+      await saveData();
+    }
+
+    async function deleteProduct(index) {
+      currentData.products.splice(index, 1);
+      await saveData();
+    }
+
+    async function saveSocial() {
+      currentData.social = {
+        facebook: document.getElementById("facebook").value,
+        instagram: document.getElementById("instagram").value,
+        tiktok: document.getElementById("tiktok").value
+      };
+      await saveData();
+    }
+
+    async function saveData() {
+      const res = await fetch(`https://api.jsonbin.io/v3/b/${binId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
           "X-Master-Key": apiKey
         },
-        body: JSON.stringify({ products })
-      })
-      .then(() => loadProducts());
+        body: JSON.stringify(currentData)
+      });
+      await fetchData();
     }
 
-    function editProduct(index, field, value) {
-      products[index][field] = field === "price" ? Number(value) : value;
-      updateBin();
-    }
-
-    function deleteProduct(index) {
-      if (confirm("هل أنت متأكد من الحذف؟")) {
-        products.splice(index, 1);
-        updateBin();
-      }
-    }
-
-    function addProduct() {
-      const name = document.getElementById("newName").value;
-      const price = parseFloat(document.getElementById("newPrice").value);
-      const image = document.getElementById("newImage").value;
-
-      if (!name || !price || !image) {
-        alert("يرجى ملء كل الحقول");
-        return;
-      }
-
-      products.push({ name, price, image });
-      updateBin();
-
-      document.getElementById("newName").value = "";
-      document.getElementById("newPrice").value = "";
-      document.getElementById("newImage").value = "";
-    }
-
-    loadProducts();
+    fetchData();
   </script>
 </body>
 </html>
