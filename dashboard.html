@@ -1,184 +1,146 @@
+<!-- dashboard.html -->
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>لوحة التحكم - Bariq Store</title>
-  <link rel="stylesheet" href="assets/css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>لوحة التحكم | Bariq Store</title>
   <style>
     body {
       font-family: 'Cairo', sans-serif;
-      background-color: #fff8fa;
+      background: #fffafc;
       padding: 2rem;
       margin: 0;
     }
-    header {
-      background: linear-gradient(90deg, #e91e63, #f8bbd0);
-      color: white;
+    h1 {
       text-align: center;
-      padding: 1.2rem;
-      font-size: 1.8rem;
-      font-weight: bold;
-      margin-bottom: 2rem;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      color: #e91e63;
     }
-    .top-bar {
-      text-align: center;
-      margin-bottom: 1.5rem;
+    .product {
+      border: 1px dashed #f8bbd0;
+      background: #fff;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-radius: 10px;
     }
-    .btn {
-      background-color: #e91e63;
+    input {
+      width: 100%;
+      padding: 0.5rem;
+      margin: 0.3rem 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-family: inherit;
+    }
+    button {
+      margin-top: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: #e91e63;
       color: white;
-      padding: 0.6rem 1.2rem;
       border: none;
       border-radius: 8px;
       cursor: pointer;
-      margin: 0.4rem;
     }
-    .btn:hover {
-      background-color: #c2185b;
+    button:hover {
+      background: #c2185b;
     }
-    .product-card {
-      background: white;
-      border: 1px solid #f8bbd0;
+    .product img {
+      max-width: 100px;
+      border-radius: 8px;
+      display: block;
+      margin: 0.5rem 0;
+    }
+    .add-product {
+      border: 2px solid #e91e63;
       padding: 1rem;
       border-radius: 10px;
-      margin-bottom: 1rem;
-      text-align: center;
-    }
-    .product-card img {
-      width: 100px;
-      border-radius: 10px;
-      margin-bottom: 0.5rem;
-    }
-    .product-actions {
-      margin-top: 0.5rem;
-    }
-    .form-popup {
-      display: none;
+      margin-top: 2rem;
       background: #fff0f5;
-      padding: 1.5rem;
-      border: 2px dashed #f8bbd0;
-      border-radius: 15px;
-      max-width: 400px;
-      margin: auto;
     }
-    .form-popup input, .form-popup textarea {
-      width: 100%;
-      margin-bottom: 1rem;
-      padding: 0.5rem;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      font-family: inherit;
+    .logout {
+      display: block;
+      text-align: center;
+      margin-top: 2rem;
+      color: #e91e63;
+      text-decoration: underline;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
+  <h1>لوحة التحكم - Bariq Store</h1>
 
-  <header>لوحة التحكم - Bariq Store</header>
+  <div id="productsList"></div>
 
-  <div class="top-bar">
-    <button class="btn" onclick="toggleForm()">➕ إضافة منتج</button>
-    <button class="btn" onclick="logout()">🚪 تسجيل خروج</button>
+  <div class="add-product">
+    <h3>إضافة منتج جديد</h3>
+    <input type="text" id="newName" placeholder="اسم المنتج">
+    <input type="number" id="newPrice" placeholder="السعر">
+    <input type="text" id="newImage" placeholder="رابط الصورة أو اسم الصورة">
+    <button onclick="addProduct()">إضافة</button>
   </div>
 
-  <div class="form-popup" id="formPopup">
-    <h3>إضافة / تعديل منتج</h3>
-    <input type="hidden" id="editIndex">
-    <label>اسم المنتج:</label>
-    <input type="text" id="productName" required>
-    <label>السعر:</label>
-    <input type="text" id="productPrice" required>
-    <label>رابط الصورة:</label>
-    <input type="text" id="productImage" required>
-    <button class="btn" onclick="saveProduct()">💾 حفظ</button>
-    <button class="btn" onclick="toggleForm(false)">❌ إلغاء</button>
-  </div>
-
-  <div id="productList"></div>
+  <div class="logout" onclick="logout()">تسجيل الخروج</div>
 
   <script>
-    if (localStorage.getItem("auth") !== "true") {
+    // تحقق من تسجيل الدخول
+    if (localStorage.getItem("isLoggedIn") !== "true") {
       window.location.href = "login.html";
     }
 
     let products = JSON.parse(localStorage.getItem("products") || "[]");
+    const list = document.getElementById("productsList");
 
     function renderProducts() {
-      const list = document.getElementById("productList");
       list.innerHTML = "";
-      products.forEach((prod, index) => {
-        const card = document.createElement("div");
-        card.className = "product-card";
-        card.innerHTML = `
-          <img src="${prod.image}" alt="${prod.name}">
-          <h3>${prod.name}</h3>
-          <p>السعر: ${prod.price} جنيه</p>
-          <div class="product-actions">
-            <button class="btn" onclick="editProduct(${index})">✏️ تعديل</button>
-            <button class="btn" onclick="deleteProduct(${index})">🗑️ حذف</button>
+      products.forEach((p, i) => {
+        list.innerHTML += `
+          <div class="product">
+            <img src="${p.image}" alt="${p.name}">
+            <input value="${p.name}" onchange="editProduct(${i}, 'name', this.value)">
+            <input type="number" value="${p.price}" onchange="editProduct(${i}, 'price', this.value)">
+            <input value="${p.image}" onchange="editProduct(${i}, 'image', this.value)">
+            <button onclick="deleteProduct(${i})">🗑️ حذف المنتج</button>
           </div>
         `;
-        list.appendChild(card);
       });
     }
 
-    function toggleForm(show = true) {
-      const form = document.getElementById("formPopup");
-      form.style.display = show ? "block" : "none";
-      if (!show) clearForm();
-    }
-
-    function clearForm() {
-      document.getElementById("productName").value = "";
-      document.getElementById("productPrice").value = "";
-      document.getElementById("productImage").value = "";
-      document.getElementById("editIndex").value = "";
-    }
-
-    function saveProduct() {
-      const name = document.getElementById("productName").value.trim();
-      const price = document.getElementById("productPrice").value.trim();
-      const image = document.getElementById("productImage").value.trim();
-      const index = document.getElementById("editIndex").value;
-
-      if (!name || !price || !image) {
-        alert("يرجى ملء جميع الحقول");
-        return;
-      }
-
-      const product = { name, price, image };
-
-      if (index === "") {
-        products.push(product);
-      } else {
-        products[index] = product;
-      }
-
+    function editProduct(index, field, value) {
+      products[index][field] = field === 'price' ? parseFloat(value) : value;
       localStorage.setItem("products", JSON.stringify(products));
       renderProducts();
-      toggleForm(false);
-    }
-
-    function editProduct(index) {
-      const prod = products[index];
-      document.getElementById("productName").value = prod.name;
-      document.getElementById("productPrice").value = prod.price;
-      document.getElementById("productImage").value = prod.image;
-      document.getElementById("editIndex").value = index;
-      toggleForm(true);
     }
 
     function deleteProduct(index) {
-      if (confirm("هل تريد حذف هذا المنتج؟")) {
+      if (confirm("هل أنت متأكد أنك تريد حذف هذا المنتج؟")) {
         products.splice(index, 1);
         localStorage.setItem("products", JSON.stringify(products));
         renderProducts();
       }
     }
 
+    function addProduct() {
+      const name = document.getElementById("newName").value.trim();
+      const price = parseFloat(document.getElementById("newPrice").value.trim());
+      const image = document.getElementById("newImage").value.trim();
+
+      if (!name || !price || !image) {
+        alert("يرجى ملء جميع الحقول!");
+        return;
+      }
+
+      products.push({ name, price, image });
+      localStorage.setItem("products", JSON.stringify(products));
+      renderProducts();
+
+      // إعادة تعيين الحقول
+      document.getElementById("newName").value = "";
+      document.getElementById("newPrice").value = "";
+      document.getElementById("newImage").value = "";
+    }
+
     function logout() {
-      localStorage.removeItem("auth");
+      localStorage.removeItem("isLoggedIn");
       window.location.href = "login.html";
     }
 
