@@ -6,6 +6,21 @@
   <title>منتجات Bariq Store</title>
   <link rel="stylesheet" href="assets/css/style.css">
   <style>
+    body {
+      font-family: 'Cairo', sans-serif;
+      background-color: #fff3f7;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background: linear-gradient(90deg, #e91e63, #f8bbd0);
+      color: white;
+      text-align: center;
+      padding: 1.5rem 1rem;
+      font-size: 1.8rem;
+      font-weight: bold;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
     .products-container {
       display: flex;
       flex-wrap: wrap;
@@ -40,11 +55,17 @@
       font-weight: bold;
       color: #e91e63;
     }
+    .no-products {
+      text-align: center;
+      font-size: 1.2rem;
+      color: #999;
+      margin-top: 3rem;
+    }
   </style>
 </head>
 <body>
   <header>
-    منتجات Bariq Store ✨
+    ✨ منتجات Bariq Store
   </header>
 
   <div class="products-container" id="productsContainer">
@@ -55,22 +76,26 @@
     const products = JSON.parse(localStorage.getItem("products") || "[]");
     const container = document.getElementById("productsContainer");
 
-    products.forEach((product, index) => {
-      const card = document.createElement("div");
-      card.className = "product-card";
-      card.onclick = () => {
-        localStorage.setItem("selectedProduct", JSON.stringify(product));
-        window.location.href = "product.html";
-      };
+    if (products.length === 0) {
+      container.innerHTML = "<p class='no-products'>لا توجد منتجات حالياً</p>";
+    } else {
+      products.forEach((product) => {
+        const card = document.createElement("div");
+        card.className = "product-card";
+        card.onclick = () => {
+          localStorage.setItem("selectedProduct", JSON.stringify(product));
+          window.location.href = "product.html";
+        };
 
-      card.innerHTML = `
-        <img src="${product.image}" alt="${product.name}">
-        <h3>${product.name}</h3>
-        <p>${product.price} جنيه</p>
-      `;
+        card.innerHTML = `
+          <img src="${product.image}" alt="${product.name}">
+          <h3>${product.name}</h3>
+          <p>${product.price} جنيه</p>
+        `;
 
-      container.appendChild(card);
-    });
+        container.appendChild(card);
+      });
+    }
   </script>
 </body>
 </html>
