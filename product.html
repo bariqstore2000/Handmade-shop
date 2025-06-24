@@ -76,33 +76,51 @@
       text-align: center;
     }
 
-    label {
+    form {
+      background-color: #fff;
+      padding: 2rem;
+      border-radius: 20px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+      max-width: 600px;
+      margin: 2rem auto;
+    }
+
+    form label {
       display: block;
       margin-top: 1rem;
       font-weight: bold;
+      color: #444;
     }
 
-    input, textarea {
+    form input,
+    form textarea {
       width: 100%;
-      padding: 0.6rem;
-      border-radius: 10px;
+      padding: 0.8rem;
+      margin-top: 0.5rem;
       border: 1px solid #ccc;
-      margin-top: 0.3rem;
-    }
-
-    .btn {
-      background-color: #e91e63;
-      color: white;
-      padding: 0.7rem 1.5rem;
-      border: none;
       border-radius: 10px;
       font-size: 1rem;
-      margin-top: 1rem;
+      box-sizing: border-box;
+    }
+
+    form input[type="file"] {
+      background-color: #f9f9f9;
+    }
+
+    form .btn {
+      width: 100%;
+      padding: 0.9rem;
+      font-size: 1.1rem;
+      margin-top: 1.5rem;
+      background-color: #e91e63;
+      color: white;
+      border: none;
+      border-radius: 10px;
       cursor: pointer;
       transition: background-color 0.3s ease;
     }
 
-    .btn:hover {
+    form .btn:hover {
       background-color: #c2185b;
     }
 
