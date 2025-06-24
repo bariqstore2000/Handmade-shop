@@ -143,6 +143,7 @@
     const apiKey = "$2a$10$5mDPhbojylWVObRzAhkf9OHB8AuuykL/cvlGx4rC3V1IRjwvTzA6a";
     const urlParams = new URLSearchParams(window.location.search);
     const productId = parseInt(urlParams.get("id"));
+    let currentProduct = null;
 
     fetch(`https://api.jsonbin.io/v3/b/${binId}/latest`, {
       headers: { "X-Master-Key": apiKey }
@@ -150,6 +151,7 @@
     .then(res => res.json())
     .then(data => {
       const product = data.record.products[productId];
+      currentProduct = product;
       const social = data.record.social || {};
       const title = data.record.siteTitle || "متجر بريق";
       const favicon = data.record.favicon || "";
@@ -169,7 +171,7 @@
         <h2>${product.name}</h2>
         <p><strong>السعر:</strong> ${product.price} جنيه</p>
         <p style="text-align:center; color:#e91e63; font-weight:bold;">
-          فودافون كاش / إنستا باي : 01091212686
+          💳 فودافون كاش / إنستا باي: 01091212686
         </p>
 
         <form onsubmit="sendOrder(event)">
@@ -206,6 +208,8 @@
 
     async function sendOrder(event) {
       event.preventDefault();
+      if (!currentProduct) return alert("المنتج غير متاح");
+
       const name = document.getElementById("name").value;
       const phone = document.getElementById("phone").value;
       const address = document.getElementById("address").value;
@@ -232,7 +236,7 @@
             `👤 الاسم: ${name}\n` +
             `📞 الهاتف: ${phone}\n` +
             `📍 العنوان: ${address}\n` +
-            `🛍️ المنتج: ${productId}\n` +
+            `🛍️ المنتج: ${currentProduct.name}\n` +
             `💳 رقم التحويل: ${transferNumber}\n` +
             `📝 ملاحظات: ${notes || "لا توجد"}\n` +
             `💵 صورة التحويل:\n${imageUrl}`;
