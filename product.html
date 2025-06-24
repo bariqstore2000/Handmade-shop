@@ -1,17 +1,19 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>تفاصيل المنتج | Bariq Store</title>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+  <link id="faviconLink" rel="icon" type="image/png" href="">
   <style>
     body {
       font-family: 'Cairo', sans-serif;
       margin: 0;
       padding: 0;
-      background: linear-gradient(to top left, #fff0f5, #ffe4e1);
+      background: linear-gradient(to bottom right, #fff0f5, #ffe4e1);
     }
+
     header {
       display: flex;
       justify-content: space-between;
@@ -20,26 +22,34 @@
       background: linear-gradient(90deg, #e91e63, #f8bbd0);
       color: white;
       padding: 1.5rem;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       border-bottom-left-radius: 30px;
       border-bottom-right-radius: 30px;
     }
+
     header .logo {
       font-size: 1.7rem;
       font-weight: bold;
     }
+
     #socialLinks a {
-      text-decoration: none;
-      margin-left: 10px;
-      padding: 8px 14px;
-      border-radius: 8px;
+      display: inline-block;
+      margin-left: 0.5rem;
+      padding: 0.5rem 1rem;
       color: white;
+      border-radius: 8px;
       font-weight: bold;
-      font-size: 0.9rem;
+      text-decoration: none;
+      transition: transform 0.2s ease;
     }
-    #socialLinks a.facebook { background: #3b5998; }
-    #socialLinks a.instagram { background: #E1306C; }
-    #socialLinks a.tiktok { background: #000000; }
+
+    #socialLinks a:hover {
+      transform: scale(1.05);
+    }
+
+    #socialLinks .facebook { background-color: #3b5998; }
+    #socialLinks .instagram { background-color: #E1306C; }
+    #socialLinks .tiktok { background-color: #000; }
+
     .container {
       max-width: 800px;
       margin: 2rem auto;
@@ -48,19 +58,20 @@
       border-radius: 20px;
       box-shadow: 0 8px 16px rgba(0,0,0,0.1);
     }
-    .product-img {
-      width: 100%;
-      border-radius: 15px;
-      box-shadow: 0 0 12px rgba(0,0,0,0.1);
-    }
+
+    h2 { margin-bottom: 0.5rem; }
+    p { margin-top: 0; font-size: 1.1rem; }
+
     .form-section {
       margin-top: 2rem;
     }
+
     label {
       display: block;
       margin: 0.5rem 0 0.2rem;
       font-weight: bold;
     }
+
     input, textarea {
       width: 100%;
       padding: 0.6rem;
@@ -69,6 +80,7 @@
       margin-bottom: 1rem;
       font-family: inherit;
     }
+
     .btn {
       background-color: #e91e63;
       color: white;
@@ -77,28 +89,27 @@
       border-radius: 10px;
       cursor: pointer;
       font-size: 1rem;
-      transition: background-color 0.3s ease;
+      transition: background-color 0.3s ease, transform 0.2s;
     }
+
     .btn:hover {
       background-color: #c2185b;
+      transform: scale(1.05);
     }
   </style>
 </head>
 <body>
   <header>
-    <div class="logo" id="siteTitle">متجر بريق | Bariq Store</div>
+    <div class="logo" id="siteTitle">متجر بريق</div>
     <div id="socialLinks"></div>
   </header>
 
-  <div class="container" id="productContainer">
-    جاري تحميل المنتج...
-  </div>
+  <div class="container" id="productContainer">جاري تحميل المنتج...</div>
 
   <script>
     const binId = "6859dc408a456b7966b45e97";
     const apiKey = "$2a$10$5mDPhbojylWVObRzAhkf9OHB8AuuykL/cvlGx4rC3V1IRjwvTzA6a";
-    const urlParams = new URLSearchParams(window.location.search);
-    const productId = parseInt(urlParams.get("id"));
+    const productId = parseInt(new URLSearchParams(window.location.search).get("id"));
 
     fetch(`https://api.jsonbin.io/v3/b/${binId}/latest`, {
       headers: { "X-Master-Key": apiKey }
@@ -107,26 +118,20 @@
     .then(data => {
       const rec = data.record || {};
       const product = rec.products?.[productId];
-      const social = rec.social;
+      const social = rec.social || {};
 
-      document.getElementById("siteTitle").textContent = rec.siteTitle || "Bariq Store";
+      // Set title and favicon
       document.title = rec.siteTitle || "Bariq Store";
-      if (rec.favicon) {
-        const link = document.createElement('link');
-        link.rel = 'icon';
-        link.href = rec.favicon;
-        document.head.appendChild(link);
-      }
+      document.getElementById("siteTitle").textContent = rec.siteTitle || "Bariq Store";
+      if (rec.favicon) document.getElementById("faviconLink").href = rec.favicon;
 
       const container = document.getElementById("productContainer");
-
       if (!product) {
         container.innerHTML = "<p>هذا المنتج غير موجود.</p>";
         return;
       }
 
       container.innerHTML = `
-        <img src="${product.image}" alt="${product.name}" class="product-img">
         <h2>${product.name}</h2>
         <p><strong>السعر:</strong> ${product.price} جنيه</p>
 
@@ -157,14 +162,12 @@
       `;
 
       const socialDiv = document.getElementById("socialLinks");
-      if (social) {
-        if (social.facebook)
-          socialDiv.innerHTML += `<a href="${social.facebook}" class="facebook" target="_blank">فيسبوك</a>`;
-        if (social.instagram)
-          socialDiv.innerHTML += `<a href="${social.instagram}" class="instagram" target="_blank">إنستجرام</a>`;
-        if (social.tiktok)
-          socialDiv.innerHTML += `<a href="${social.tiktok}" class="tiktok" target="_blank">تيك توك</a>`;
-      }
+      if (social.facebook)
+        socialDiv.innerHTML += `<a class="facebook" href="${social.facebook}" target="_blank">فيسبوك</a>`;
+      if (social.instagram)
+        socialDiv.innerHTML += `<a class="instagram" href="${social.instagram}" target="_blank">إنستجرام</a>`;
+      if (social.tiktok)
+        socialDiv.innerHTML += `<a class="tiktok" href="${social.tiktok}" target="_blank">تيك توك</a>`;
     });
 
     async function sendOrder(event) {
@@ -172,8 +175,8 @@
       const name = document.getElementById("name").value;
       const phone = document.getElementById("phone").value;
       const address = document.getElementById("address").value;
-      const notes = document.getElementById("notes").value;
       const transferNumber = document.getElementById("transferNumber").value;
+      const notes = document.getElementById("notes").value;
       const imageFile = document.getElementById("paymentImage").files[0];
 
       if (!imageFile) return alert("يرجى رفع صورة التحويل");
@@ -190,7 +193,7 @@
         const result = await res.json();
         if (result.success) {
           const imageUrl = result.data.url;
-          const message =
+          const message = 
             `📦 *طلب جديد من Bariq Store* \n\n` +
             `👤 الاسم: ${name}\n` +
             `📞 الهاتف: ${phone}\n` +
@@ -199,7 +202,7 @@
             `💳 رقم التحويل: ${transferNumber}\n` +
             `📝 ملاحظات: ${notes || "لا توجد"}\n` +
             `💵 صورة التحويل:\n${imageUrl}`;
-
+          
           window.open(`https://wa.me/201091212686?text=${encodeURIComponent(message)}`, "_blank");
         }
       } catch (err) {
