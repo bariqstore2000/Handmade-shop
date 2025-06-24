@@ -126,7 +126,8 @@
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          "X-Master-Key": apiKey
+          "X-Master-Key": apiKey,
+          "X-Bin-Versioning": "false"
         },
         body: JSON.stringify(updated)
       });
