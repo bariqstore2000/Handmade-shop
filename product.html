@@ -22,6 +22,7 @@
       background: linear-gradient(90deg, #e91e63, #f8bbd0);
       color: white;
       padding: 1.5rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       border-bottom-left-radius: 30px;
       border-bottom-right-radius: 30px;
     }
@@ -32,23 +33,18 @@
     }
 
     #socialLinks a {
-      display: inline-block;
-      margin-left: 0.5rem;
-      padding: 0.5rem 1rem;
-      color: white;
-      border-radius: 8px;
-      font-weight: bold;
       text-decoration: none;
-      transition: transform 0.2s ease;
+      margin-left: 10px;
+      padding: 8px 14px;
+      border-radius: 8px;
+      color: white;
+      font-weight: bold;
+      font-size: 0.9rem;
     }
 
-    #socialLinks a:hover {
-      transform: scale(1.05);
-    }
-
-    #socialLinks .facebook { background-color: #3b5998; }
-    #socialLinks .instagram { background-color: #E1306C; }
-    #socialLinks .tiktok { background-color: #000; }
+    #socialLinks a.facebook { background: #3b5998; }
+    #socialLinks a.instagram { background: #E1306C; }
+    #socialLinks a.tiktok { background: #000000; }
 
     .container {
       max-width: 800px;
@@ -59,8 +55,24 @@
       box-shadow: 0 8px 16px rgba(0,0,0,0.1);
     }
 
-    h2 { margin-bottom: 0.5rem; }
-    p { margin-top: 0; font-size: 1.1rem; }
+    .product-img {
+      width: 60%;
+      max-width: 300px;
+      display: block;
+      margin: 0 auto 1rem;
+      border-radius: 15px;
+      box-shadow: 0 0 12px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+    }
+
+    p {
+      text-align: center;
+      font-size: 1.1rem;
+      margin-bottom: 2rem;
+    }
 
     .form-section {
       margin-top: 2rem;
@@ -89,27 +101,29 @@
       border-radius: 10px;
       cursor: pointer;
       font-size: 1rem;
-      transition: background-color 0.3s ease, transform 0.2s;
+      transition: background-color 0.3s ease;
     }
 
     .btn:hover {
       background-color: #c2185b;
-      transform: scale(1.05);
     }
   </style>
 </head>
 <body>
   <header>
-    <div class="logo" id="siteTitle">متجر بريق</div>
+    <div class="logo" id="siteTitle">متجر بريق | Bariq Store</div>
     <div id="socialLinks"></div>
   </header>
 
-  <div class="container" id="productContainer">جاري تحميل المنتج...</div>
+  <div class="container" id="productContainer">
+    جاري تحميل المنتج...
+  </div>
 
   <script>
     const binId = "6859dc408a456b7966b45e97";
     const apiKey = "$2a$10$5mDPhbojylWVObRzAhkf9OHB8AuuykL/cvlGx4rC3V1IRjwvTzA6a";
-    const productId = parseInt(new URLSearchParams(window.location.search).get("id"));
+    const urlParams = new URLSearchParams(window.location.search);
+    const productId = parseInt(urlParams.get("id"));
 
     fetch(`https://api.jsonbin.io/v3/b/${binId}/latest`, {
       headers: { "X-Master-Key": apiKey }
@@ -118,20 +132,23 @@
     .then(data => {
       const rec = data.record || {};
       const product = rec.products?.[productId];
-      const social = rec.social || {};
+      const social = rec.social;
 
-      // Set title and favicon
-      document.title = rec.siteTitle || "Bariq Store";
       document.getElementById("siteTitle").textContent = rec.siteTitle || "Bariq Store";
-      if (rec.favicon) document.getElementById("faviconLink").href = rec.favicon;
+      document.title = rec.siteTitle || "Bariq Store";
+      if (rec.favicon) {
+        document.getElementById("faviconLink").href = rec.favicon;
+      }
 
       const container = document.getElementById("productContainer");
+
       if (!product) {
         container.innerHTML = "<p>هذا المنتج غير موجود.</p>";
         return;
       }
 
       container.innerHTML = `
+        <img src="${product.image}" alt="${product.name}" class="product-img">
         <h2>${product.name}</h2>
         <p><strong>السعر:</strong> ${product.price} جنيه</p>
 
@@ -162,12 +179,14 @@
       `;
 
       const socialDiv = document.getElementById("socialLinks");
-      if (social.facebook)
-        socialDiv.innerHTML += `<a class="facebook" href="${social.facebook}" target="_blank">فيسبوك</a>`;
-      if (social.instagram)
-        socialDiv.innerHTML += `<a class="instagram" href="${social.instagram}" target="_blank">إنستجرام</a>`;
-      if (social.tiktok)
-        socialDiv.innerHTML += `<a class="tiktok" href="${social.tiktok}" target="_blank">تيك توك</a>`;
+      if (social) {
+        if (social.facebook)
+          socialDiv.innerHTML += `<a href="${social.facebook}" class="facebook" target="_blank">فيسبوك</a>`;
+        if (social.instagram)
+          socialDiv.innerHTML += `<a href="${social.instagram}" class="instagram" target="_blank">إنستجرام</a>`;
+        if (social.tiktok)
+          socialDiv.innerHTML += `<a href="${social.tiktok}" class="tiktok" target="_blank">تيك توك</a>`;
+      }
     });
 
     async function sendOrder(event) {
@@ -175,8 +194,8 @@
       const name = document.getElementById("name").value;
       const phone = document.getElementById("phone").value;
       const address = document.getElementById("address").value;
-      const transferNumber = document.getElementById("transferNumber").value;
       const notes = document.getElementById("notes").value;
+      const transferNumber = document.getElementById("transferNumber").value;
       const imageFile = document.getElementById("paymentImage").files[0];
 
       if (!imageFile) return alert("يرجى رفع صورة التحويل");
@@ -193,7 +212,7 @@
         const result = await res.json();
         if (result.success) {
           const imageUrl = result.data.url;
-          const message = 
+          const message =
             `📦 *طلب جديد من Bariq Store* \n\n` +
             `👤 الاسم: ${name}\n` +
             `📞 الهاتف: ${phone}\n` +
@@ -202,7 +221,7 @@
             `💳 رقم التحويل: ${transferNumber}\n` +
             `📝 ملاحظات: ${notes || "لا توجد"}\n` +
             `💵 صورة التحويل:\n${imageUrl}`;
-          
+
           window.open(`https://wa.me/201091212686?text=${encodeURIComponent(message)}`, "_blank");
         }
       } catch (err) {
