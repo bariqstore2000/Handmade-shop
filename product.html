@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>تفاصيل المنتج | Bariq Store</title>
+  <title>تفاصيل المنتج | متجر بريق</title>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
   <link id="faviconLink" rel="icon" type="image/png" href="">
   <style>
@@ -56,7 +56,7 @@
       max-width: 1100px;
       margin: 2rem auto;
       padding: 1rem;
-      background-color: white;
+      background-color: #ffffffc9;
       border-radius: 20px;
       box-shadow: 0 8px 16px rgba(0,0,0,0.1);
     }
@@ -72,9 +72,13 @@
       margin-right: auto;
     }
 
+    h2, p {
+      text-align: center;
+    }
+
     label {
       display: block;
-      margin: 0.5rem 0 0.2rem;
+      margin-top: 1rem;
       font-weight: bold;
     }
 
@@ -83,8 +87,7 @@
       padding: 0.6rem;
       border-radius: 10px;
       border: 1px solid #ccc;
-      margin-bottom: 1rem;
-      font-family: inherit;
+      margin-top: 0.3rem;
     }
 
     .btn {
@@ -93,8 +96,9 @@
       padding: 0.7rem 1.5rem;
       border: none;
       border-radius: 10px;
-      cursor: pointer;
       font-size: 1rem;
+      margin-top: 1rem;
+      cursor: pointer;
       transition: background-color 0.3s ease;
     }
 
@@ -116,7 +120,6 @@
   <script>
     const binId = "6859dc408a456b7966b45e97";
     const apiKey = "$2a$10$5mDPhbojylWVObRzAhkf9OHB8AuuykL/cvlGx4rC3V1IRjwvTzA6a";
-
     const urlParams = new URLSearchParams(window.location.search);
     const productId = parseInt(urlParams.get("id"));
 
@@ -142,33 +145,30 @@
 
       container.innerHTML = `
         <img src="${product.image}" alt="${product.name}" class="product-img">
-        <h2 style="text-align:center;">${product.name}</h2>
-        <p style="text-align:center;"><strong>السعر:</strong> ${product.price} جنيه</p>
+        <h2>${product.name}</h2>
+        <p><strong>السعر:</strong> ${product.price} جنيه</p>
 
-        <div class="form-section">
-          <h3>نموذج الطلب</h3>
-          <form onsubmit="sendOrder(event)">
-            <label>الاسم:</label>
-            <input type="text" id="name" required>
+        <form onsubmit="sendOrder(event)">
+          <label>الاسم:</label>
+          <input type="text" id="name" required>
 
-            <label>رقم الهاتف:</label>
-            <input type="tel" id="phone" required>
+          <label>رقم الهاتف:</label>
+          <input type="tel" id="phone" required>
 
-            <label>العنوان:</label>
-            <textarea id="address" required></textarea>
+          <label>العنوان:</label>
+          <textarea id="address" required></textarea>
 
-            <label>رقم التحويل:</label>
-            <input type="text" id="transferNumber" required>
+          <label>رقم التحويل:</label>
+          <input type="text" id="transferNumber" required>
 
-            <label>صورة التحويل:</label>
-            <input type="file" id="paymentImage" accept="image/*" required>
+          <label>صورة التحويل:</label>
+          <input type="file" id="paymentImage" accept="image/*" required>
 
-            <label>ملاحظات:</label>
-            <textarea id="notes"></textarea>
+          <label>ملاحظات:</label>
+          <textarea id="notes"></textarea>
 
-            <button class="btn" type="submit">إرسال الطلب</button>
-          </form>
-        </div>
+          <button class="btn" type="submit">إرسال الطلب</button>
+        </form>
       `;
 
       const socialDiv = document.getElementById("socialLinks");
